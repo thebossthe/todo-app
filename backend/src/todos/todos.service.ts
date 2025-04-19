@@ -1,26 +1,30 @@
+// src/todo/todo.service.ts
 import { Injectable } from '@nestjs/common';
-import { CreateTodoDto } from './dto/create-todo.dto';
-import { UpdateTodoDto } from './dto/update-todo.dto';
+import { DatabaseService } from '../database/database.service';
 
 @Injectable()
-export class TodosService {
-  create(createTodoDto: CreateTodoDto) {
-    return 'This action adds a new todo';
+export class TodoService {
+  constructor(private readonly db: DatabaseService) {}
+
+  async findAll() {
+    return this.db.query('SELECT * FROM todos ORDER BY id DESC');
   }
 
-  findAll() {
-    return `This action returns all todos`;
+  async create(title: string, description: string) {
+    return this.db.query(
+      'INSERT INTO todos (title, description, is_completed) VALUES ($1, $2, $3) RETURNING *',
+      [title, description, false],
+    );
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} todo`;
+  async update(id: number, title: string, description: string, isCompleted: boolean) {
+    return this.db.query(
+      'UPDATE todos SET title = $1, description = $2, is_completed = $3 WHERE id = $4 RETURNING *',
+      [title, description, isCompleted, id],
+    );
   }
 
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    return `This action updates a #${id} todo`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} todo`;
+  async remove(id: number) {
+    return this.db.query('DELETE FROM todos WHERE id = $1', [id]);
   }
 }
