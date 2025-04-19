@@ -25,4 +25,8 @@ export class DatabaseService implements OnModuleInit {
       client.release();
     }
   }
+  
+  getClient(): Pool {
+    return this.pool;
+  }
 }

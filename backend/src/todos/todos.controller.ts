@@ -11,20 +11,20 @@ export class TodoController {
   }
 
   @Post()
-  create(@Body() body: { title: string; description: string }) {
-    return this.todoService.create(body.title, body.description);
+  async create(@Body() body: { title: string; description?: string; tag?: string }) {
+    return await this.todoService.create(body);
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: string,
-    @Body() body: { title: string; description: string; isCompleted: boolean },
+    @Body() body: { title: string; description?: string; tag?: string; isDone: boolean }
   ) {
-    return this.todoService.update(+id, body.title, body.description, body.isCompleted);
+    return await this.todoService.update(Number(id), body);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.todoService.remove(+id);
+  async delete(@Param('id') id: string) {
+    return await this.todoService.delete(Number(id));
   }
 }
