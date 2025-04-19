@@ -1,11 +1,15 @@
-// src/todo/todo.service.ts
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()
 export class TodoService {
+  // DB情報の読み込み
   constructor(private readonly db: DatabaseService) {}
 
+   /**
+   * 全てのToDoを取得する
+   * @returns 英語キーに変換したToDoリストの配列
+   */
   async findAll() {
     const sql = `
       SELECT 
@@ -17,9 +21,10 @@ export class TodoService {
       FROM "T_ToDoリスト"
       ORDER BY "ToDo＿ID"
     `;
+    // データベースから取得
     const result = await this.db.getClient().query(sql);
 
-    // 英語のキーに変換して返す
+    // 取得した各行を英語キーのオブジェクトにマッピング
     return result.rows.map((row) => ({
       id: row['ToDo＿ID'],
       title: row['タイトル'],
@@ -29,6 +34,11 @@ export class TodoService {
     }));
   }
 
+   /**
+   * ToDo を新規作成する
+   * @param todo - 作成するToDoの情報
+   * @returns 作成されたToDoのID
+   */
   async create(todo: {
     title: string;
     description?: string;
@@ -44,6 +54,12 @@ export class TodoService {
     return { id: result.rows[0]['ToDo＿ID'] };
   }
 
+   /**
+   * ToDo を更新する
+   * @param id - 更新対象のToDo ID
+   * @param todo - 更新内容
+   * @returns 成功レスポンス
+   */
   async update(id: number, todo: {
     title: string;
     description?: string;
@@ -63,6 +79,11 @@ export class TodoService {
     return { success: true };
   }
 
+   /**
+   * ToDo を削除する
+   * @param id - 削除対象のToDo ID
+   * @returns 成功レスポンス
+   */
   async delete(id: number) {
     const sql = `DELETE FROM "T_ToDoリスト" WHERE "ToDo＿ID" = $1`;
     await this.db.getClient().query(sql, [id]);

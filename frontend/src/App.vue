@@ -1,39 +1,48 @@
-<script>
-import { ref, onMounted } from 'vue'
+<template>
+  <div class="p-4">
+    <!-- ナビゲーション -->
+    <nav class="mb-4 space-x-4">
+      <router-link to="/" class="text-blue-600 hover:underline">一覧</router-link>
+      <router-link to="/add" class="text-blue-600 hover:underline">追加</router-link>
+    </nav>
 
-export default {
-  setup() {
-    const todos = ref([])
+    <!-- ルーティングに応じたコンポーネント表示 -->
+    <router-view />
+  </div>
+</template>
 
-    onMounted(async () => {
-      try {
-        const res = await fetch('http://localhost:3000/todos')
-        todos.value = await res.json()
-      } catch (e) {
-        console.error('データ取得失敗:', e)
-      }
+<script setup>
+import { ref } from 'vue'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const title = ref('')
+const description = ref('')
+const tag = ref('')
+
+const router = useRouter()
+
+// Todoを追加する処理
+const addTodo = async () => {
+  try {
+    await axios.post('http://localhost:3000/todos', {
+      title: title.value,
+      description: description.value,
+      tag: tag.value,
     })
+    // フォーム初期化
+    title.value = ''
+    description.value = ''
+    tag.value = ''
 
-    return {
-      todos
-    }
+    // Todo追加後に一覧ページへ遷移
+    router.push('/')
+  } catch (err) {
+    console.error('追加失敗:', err)
   }
 }
 </script>
 
-<template>
-  <div style="padding: 2rem">
-    <h1>✅ Todo一覧</h1>
-    <ul>
-      <li v-for="todo in todos" :key="todo.id">
-        {{ todo.title }} {{ todo.completed ? '✅' : '⬜️' }}
-      </li>
-    </ul>
-  </div>
-</template>
-
 <style>
-body {
-  font-family: sans-serif;
-}
+/* スタイルはここに追加できます */
 </style>

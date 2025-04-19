@@ -19,8 +19,7 @@ export class DatabaseService implements OnModuleInit {
   async query(text: string, params?: any[]) {
     const client = await this.pool.connect();
     try {
-      const res = await client.query(text, params);
-      return res.rows;
+      return await client.query(text, params);
     } finally {
       client.release();
     }
