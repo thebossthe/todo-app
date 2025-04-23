@@ -11,14 +11,14 @@ export class TodoController {
   }
 
   @Post()
-  async create(@Body() body: { title: string; description?: string; tag?: string }) {
+  async create(@Body() body: { title: string; description?: string; tag?: string; status?: number }) {
     return await this.todoService.create(body);
   }
 
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() body: { title: string; description?: string; tag?: string; isDone: boolean }
+    @Body() body: { title: string; description?: string; tag?: string; status: number } // `isDone` -> `status`
   ) {
     return await this.todoService.update(Number(id), body);
   }

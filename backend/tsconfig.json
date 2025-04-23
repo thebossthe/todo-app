@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "target": "ES2021",
+    "moduleResolution": "node",
+    "lib": ["ES2021", "DOM"],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
     "sourceMap": true,
     "baseUrl": "./",
     "rootDir": "./src",
@@ -21,7 +23,13 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "jsx": "preserve"
+  },
+
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "test", "dist"],
+  
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js"
   }
-  ,"include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "test", "dist"]
 }
