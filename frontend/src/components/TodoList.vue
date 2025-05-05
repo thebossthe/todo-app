@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen">
     <!-- サイドバー -->
-    <div class="sidebar p-4 border-r mr-4"> <!-- サイドバー -->
+    <div class="sidebar p-4 border-r mr-4">
       <nav class="space-y-4">
         <router-link to="/" class="block text-blue-600 hover:text-blue-800 border-b-2 pb-2">一覧</router-link>
         <router-link to="/add" class="block text-blue-600 hover:text-blue-800 border-b-2 pb-2">追加</router-link>
@@ -9,32 +9,37 @@
     </div>
 
     <!-- メインコンテンツ -->
-    <div class="main-content p-4 overflow-auto">
+    <div class="main-content w-full flex-grow min-w-0 p-4">
       <h2 class="text-xl mb-4">一覧</h2>
-      <table class="w-full table-auto border-collapse">
+
+      <!-- 完了も含むチェックボックス -->
+      <div class="mb-4">
+        <label>
+          <input type="checkbox" v-model="showCompleted" />
+          完了も含む
+        </label>
+      </div>
+
+      <table class="w-full border-collapse">
         <thead>
           <tr>
-            <th class="border-b-2 px-4 py-2">No</th>
-            <th class="border-b-2 px-4 py-2">タイトル</th>
-            <th class="border-b-2 px-4 py-2">説明</th>
-            <th class="border-b-2 px-4 py-2">タグ</th>
-            <th class="border-b-2 px-4 py-2">ステータス</th>
+            <th class="w-[5%]">No</th>
+            <th class="w-[25%]">タイトル</th>
+            <th class="w-[55%]">説明</th>
+            <th class="w-[5%]">タグ</th>
+            <th class="w-[5%]">ステータス</th>
+            <th class="w-[5%]">操作</th> 
           </tr>
         </thead>
         <tbody>
-          <tr v-for="todo in todos" :key="todo.id">
-            <td class="border-b px-4 py-2">{{ todo.id }}</td>
-            <td class="border-b px-4 py-2">{{ todo.title }}</td>
-            <td class="border-b px-4 py-2">{{ todo.description }}</td>
-            <td class="border-b px-4 py-2">{{ todo.tag }}</td>
-            <td class="border-b px-4 py-2">
-              <span :class="{
-                'text-red-500': todo.status === 0,
-                'text-green-500': todo.status === 1,
-                'text-yellow-500': todo.status === 2
-              }">
-                {{ getStatusText(todo.status) }}
-              </span>
+          <tr v-for="todo in filteredTodos" :key="todo.id">
+            <td>{{ todo.id }}</td>
+            <td>{{ todo.title }}</td>
+            <td>{{ todo.description }}</td>
+            <td>{{ todo.tag }}</td>
+            <td>{{ getStatusText(todo.status) }}</td>
+            <td>
+              <router-link :to="`/edit/${todo.id}`">編集</router-link>
             </td>
           </tr>
         </tbody>
@@ -44,14 +49,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 
 const todos = ref([])
+const showCompleted = ref(false) // 完了も含むチェックボックス
 
 // ステータスのテキストを返す関数
 const getStatusText = (status) => {
-  switch (status) {
+  const numericStatus = Number(status); 
+  switch (numericStatus) {
     case 0:
       return '未着手'
     case 1:
@@ -65,45 +72,60 @@ const getStatusText = (status) => {
 
 // Todo一覧を取得する処理
 const fetchTodos = async () => {
+  console.log('Fetching Todos...', { includeCompleted: showCompleted.value });  // リクエスト時のパラメータを確認
   try {
-    const response = await axios.get('http://localhost:3000/todos')
-    todos.value = response.data
+    const response = await axios.get('http://localhost:3000/todos', {
+      params: { includeCompleted: showCompleted.value }
+    });
+    console.log('Fetched Todos:', response.data);  // レスポンス内容を確認
+    todos.value = response.data;
   } catch (err) {
-    console.error('Todoの取得に失敗しました:', err)
+    console.error('Todoの取得に失敗しました:', err);
   }
-}
+};
+
+// 完了も含むオプションを反映したfilteredTodosを計算プロパティでフィルタリング
+const filteredTodos = computed(() => {
+  console.log("Filtered Todos: ", todos.value); // フィルタリング前の todos を確認
+  if (showCompleted.value) {
+    return todos.value
+  } else {
+    return todos.value.filter(todo => todo.status !== '1') // 完了状態以外を表示
+  }
+})
 
 // コンポーネントがマウントされた時にTodo一覧を取得
 onMounted(() => {
   fetchTodos()
 })
+
+// 完了も含むオプション変更時に再検索
+watch(showCompleted, () => {
+  console.log('showCompleted changed:', showCompleted.value);  // showCompletedの状態確認
+  fetchTodos()
+});
 </script>
 
 <style scoped>
-/* サイドバーのスタイル */
-.sidebar {
-  width: 100px; /* サイドバーの幅を指定 */
-  background-color: #f7fafc; /* 背景色 */
-  border-right: 1px solid #ccc; /* 右側の罫線 */
-  height: 100vh; /* サイドバーの高さを画面いっぱいに */
-  padding-bottom: 1rem;
-  position: sticky;
-  top: 0;
-  margin-right: 1rem; /* サイドバーとメインコンテンツの間に余白を追加 */
-}
-
 /* メインコンテンツ */
 .main-content {
-  width: 400px; /* メインコンテンツの幅を固定 */
+  flex-grow: 1;  /* メインコンテンツをサイドバーの隣で可動させる */
   padding: 1rem;
-  background-color: #fff; /* 背景色を指定 */
-  overflow-y: auto; /* コンテンツがはみ出した場合にスクロールできるように */
+  background-color: #fff;
+  overflow-y: auto;
 }
 
 /* フレックスの親要素に適用 */
 .flex {
-  display: flex; /* 横並びにする */
-  height: 100vh; /* 高さを画面いっぱいに */
+  display: flex;
+  height: 100vh;
+  flex-wrap: nowrap; /* 子要素が横並びになるように */
+  justify-content: space-between; /* 余白を均等に分配 */
+}
+
+/* サイドバーとメインコンテンツの間に余白を設定 */
+.flex > * {
+  box-sizing: border-box;
 }
 
 /* ナビゲーションのリンクのスタイル */
@@ -129,6 +151,7 @@ nav a:hover {
 table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto; /* 列幅をコンテンツに基づいて調整 */
 }
 
 th, td {
@@ -139,5 +162,12 @@ th, td {
 
 th {
   background-color: #f4f4f4;
+}
+
+/* テキストが長い場合に折り返す */
+td {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 </style>

@@ -1,11 +1,6 @@
 <template>
-  <div class="container mx-auto p-4">
-    <!-- ヘッダー（任意） -->
-    <header class="mb-4 text-2xl font-bold">
-      <h1>ToDoアプリ</h1>
-    </header>
-
-    <!-- ナビゲーション（共通） -->
+  <div class="min-h-screen">
+    <!-- ヘッダー -->
 
     <!-- ルートに応じたコンポーネントを表示 -->
     <router-view />
@@ -15,6 +10,22 @@
 <script setup>
 </script>
 
-<style scoped>
-/* 必要に応じてスタイルを追加します */
+<style>
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+header {
+  flex-shrink: 0; /* ヘッダーは縮小しないように */
+}
 </style>

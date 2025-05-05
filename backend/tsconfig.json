@@ -24,12 +24,6 @@
     "noFallthroughCasesInSwitch": false,
     "jsx": "preserve"
   },
-
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "test", "dist"],
-  
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/main.js"
-  }
+  "exclude": ["node_modules"]
 }

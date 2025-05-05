@@ -8,9 +8,10 @@ export class TodoService {
 
   /**
    * 全てのToDoを取得する
+   * @param includeCompleted - 完了したToDoを含むかどうか
    * @returns ToDoリストの配列
    */
-  async findAll() {
+  async findAll(showCompleted: boolean) {
     const sql = `
       SELECT 
         "ＴＯＤＯ＿ＩＤ" AS id,
@@ -19,12 +20,10 @@ export class TodoService {
         "タグ" AS tag,
         "ＴＯＤＯ＿ステータス" AS status
       FROM "T_ToDoリスト"
+      ${showCompleted ? "" : "WHERE \"ＴＯＤＯ＿ステータス\" != 1"}  -- 完了ステータスが1の場合を除外
       ORDER BY "ＴＯＤＯ＿ＩＤ"
     `;
-    // データベースから取得
     const result = await this.db.getClient().query(sql);
-
-    // 取得した各行をそのまま返す
     return result.rows;
   }
 
@@ -91,4 +90,18 @@ export class TodoService {
     const result = await this.db.getClient().query(sql, [id]);
     return { success: true, id: result.rows[0].id };
   }
+
+    /**
+   * タグの一覧を取得する
+   * @returns タグの名称の配列
+   */
+    async getTags() {
+      const sql = `
+        SELECT "タグ名称" AS tag
+        FROM "T_タグ定数"
+        ORDER BY "タグ名称"
+      `;
+      const result = await this.db.getClient().query(sql);
+      return result.rows.map(row => row.tag);  // タグ名称の配列を返す
+    }
 }

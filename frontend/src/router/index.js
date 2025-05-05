@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TodoList from '../components/TodoList.vue' // Todo一覧ページ
-import TodoAdd from '../components/TodoAdd.vue' // Todo追加ページ
+import TodoAdd from '../components/TodoAdd.vue'   // Todo追加ページ
+import TodoEdit from '../components/TodoEdit.vue' // Todo編集ページ
+
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const routes = [
@@ -13,6 +15,12 @@ const routes = [
     path: '/add',
     name: 'AddTodo',
     component: TodoAdd
+  },
+  {
+    path: '/edit/:id', // 編集ページ用ルート
+    name: 'EditTodo',
+    component: TodoEdit,
+    props: true         // これにより `id` を props 経由で渡せる
   }
 ]
 

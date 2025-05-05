@@ -24,10 +24,9 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  display: block;  /* flexを削除 */
 }
 
 h1 {
@@ -59,10 +58,33 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+/* サイドバーのスタイル */
+.sidebar {
+  width: 250px; /* サイドバーの幅を固定 */
+  background-color: #f7fafc; /* 背景色 */
+  border-right: 1px solid #ccc; /* 右側の罫線 */
+  height: 100vh; /* サイドバーの高さを画面いっぱいに */
+  position: sticky;
+  top: 0;
+  padding-bottom: 1rem;
+  flex-shrink: 0;  /* サイドバーの幅が縮小しないようにする */
+}
+
+input,
+textarea,
+select {
+  padding-top: 0.75rem;  /* 上の余白を少し増やす */
+  padding-bottom: 3rem;
+  font-size: 1.1rem;
+}
+
+.flex-col {
+  margin-bottom: 2rem; /* 下に1rem（約16px）の余白を追加 */
 }
 
 @media (prefers-color-scheme: light) {

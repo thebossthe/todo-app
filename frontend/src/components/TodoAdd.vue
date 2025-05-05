@@ -1,3 +1,4 @@
+<!-- src/components/TodoAdd.vue -->
 <template>
   <div class="p-4 flex">
     <!-- サイドバー -->
@@ -15,22 +16,26 @@
         <!-- タイトル -->
         <div class="flex flex-col">
           <label for="title" class="block">タイトル</label>
-          <input v-model="title" id="title" class="border p-2 w-full" required />
+          <input v-model="title" id="title" class="border p-2" required />
         </div>
         <!-- 説明 -->
         <div class="flex flex-col">
           <label for="description" class="block">説明</label>
-          <textarea v-model="description" id="description" class="border p-2 w-full h-24"></textarea>
+          <textarea v-model="description" id="description" class="border p-2 h-24"></textarea>
         </div>
         <!-- タグ -->
         <div class="flex flex-col">
           <label for="tag" class="block">タグ</label>
-          <input v-model="tag" id="tag" class="border p-2 w-full" />
+          <select v-model="tag" id="tag" class="border p-2">
+            <option v-for="tagName in tags" :key="tagName" :value="tagName">
+              {{ tagName }}
+            </option>
+          </select>
         </div>
         <!-- ステータス -->
         <div class="flex flex-col">
           <label for="status" class="block">ステータス</label>
-          <select v-model="status" id="status" class="border p-2 w-full">
+          <select v-model="status" id="status" class="border p-2">
             <option value="0">未着手</option>
             <option value="1">完了</option>
             <option value="2">進行中</option>
@@ -38,7 +43,7 @@
         </div>
         <!-- 追加ボタン -->
         <div class="flex flex-col">
-          <button type="submit" class="bg-blue-600 text-white p-2 w-full border-2 border-blue-600 hover:bg-blue-700 hover:border-blue-700 rounded">
+          <button type="submit" class="bg-blue-600 text-white p-2 rounded">
             追加
           </button>
         </div>
@@ -48,16 +53,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-const title = ref('')
-const description = ref('')
-const tag = ref('')
-const status = ref(0)  // 追加されたステータス（未完了をデフォルトに設定）
+const title = ref('');
+const description = ref('');
+const tag = ref('');
+const status = ref(0);  // デフォルトは未着手
+const tags = ref([]);  // タグの選択肢を保持
 
-const router = useRouter()
+const router = useRouter();
+
+// コンポーネントがマウントされたときにタグ一覧を取得
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/todos/tags');
+    tags.value = response.data;  // タグ一覧をセット
+    console.log('取得したタグ一覧:', tags.value);  // ここで確認
+  } catch (error) {
+    console.error('タグ取得失敗:', error);
+  }
+});
 
 // Todoを追加する処理
 const addTodo = async () => {
@@ -66,41 +83,32 @@ const addTodo = async () => {
       title: title.value,
       description: description.value,
       tag: tag.value,
-      status: status.value,  // statusを送信
-    })
+      status: status.value,  // 追加されたステータスを送信
+    });
     // フォーム初期化
-    title.value = ''
-    description.value = ''
-    tag.value = ''
-    status.value = 0  // デフォルトのステータスにリセット
+    title.value = '';
+    description.value = '';
+    tag.value = '';
+    status.value = 0;  // デフォルトのステータスにリセット
 
     // Todo追加後に一覧ページへ遷移
-    router.push('/')
+    router.push('/');
   } catch (err) {
-    console.error('追加失敗:', err)
+    console.error('追加失敗:', err);
   }
-}
+};
 </script>
 
 <style scoped>
-/* サイドバーのスタイルを追加 */
-.sidebar {
-  width: 100px; /* サイドバーの幅を指定 */
-  background-color: #f7fafc; /* 背景色 */
-  border-right: 1px solid #ccc; /* 右側の罫線 */
-  height: 100vh; /* サイドバーの高さを画面いっぱいに */
-  padding-bottom: 1rem;
-  position: sticky;
-  top: 0;
-  margin-right: 1rem; /* サイドバーとメインコンテンツの間に余白を追加 */
-}
-
 /* メインコンテンツ */
 .flex-1 {
-  width: 400px; /* メインコンテンツの幅を固定 */
+  flex-grow: 1;
+  min-width: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   padding: 1rem;
-  background-color: #fff; /* 背景色を指定 */
-  overflow-y: auto; /* コンテンツがはみ出した場合にスクロールできるように */
+  background-color: #fff;
 }
 
 nav {
@@ -150,4 +158,25 @@ button:hover {
 textarea {
   height: 6rem; /* 高さを約4行分に設定 */
 }
+
+/* 入力要素とボタンの幅を100%にして、box-sizingを設定 */
+input, textarea, select, button {
+  width: 100%;
+  box-sizing: border-box; /* paddingやborderを含めて幅を計算 */
+}
+
+#tag {
+  text-align: center;
+  font-size: 1.1rem;
+  height: 3rem;         /* 高さを指定（例：3rem） */
+  padding: 0.5rem 1rem; /* 上下左右の余白調整 */
+}
+
+#status {
+  text-align: center;
+  font-size: 1.1rem;
+  height: 3rem;         /* 高さを指定（例：3rem） */
+  padding: 0.5rem 1rem; /* 上下左右の余白調整 */
+}
+
 </style>
