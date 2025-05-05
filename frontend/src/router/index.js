@@ -29,4 +29,9 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  console.log(`遷移: from=${from.fullPath} → to=${to.fullPath}`);
+  next();
+});
+
 export default router

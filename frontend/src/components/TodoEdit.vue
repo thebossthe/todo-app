@@ -61,13 +61,21 @@ const tags = ref([])
 
 const fetchTodo = async () => {
   try {
-    const res = await axios.get('http://localhost:3000/todos')
-    const found = res.data.find(t => t.id === parseInt(route.params.id))
-    if (found) todo.value = { ...found }
+    const res = await axios.get('http://localhost:3000/todos', {
+      params: { includeCompleted: true }  // 明示的に完了含むように指定
+    });
+    console.log('取得した全Todoリスト:', res.data);
+    const found = res.data.find(t => t.id === parseInt(route.params.id));
+    if (found) {
+      console.log('該当のTodo:', found);
+      todo.value = { ...found };
+    } else {
+      console.warn('該当するTodoが見つかりませんでした。ID:', route.params.id);
+    }
   } catch (err) {
-    console.error('Todoの取得に失敗:', err)
+    console.error('Todoの取得に失敗:', err);
   }
-}
+};
 
 const fetchTags = async () => {
   try {
@@ -99,6 +107,7 @@ const deleteTodo = async () => {
 }
 
 onMounted(() => {
+  console.log('Editページに遷移しました。Todo ID:', route.params.id)
   fetchTodo()
   fetchTags()
 })
