@@ -214,7 +214,7 @@ th {
 
 /* テキストが長い場合に折り返す */
 td {
-  white-space: normal;
+  white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: break-all;
 }
