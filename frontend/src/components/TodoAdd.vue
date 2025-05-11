@@ -1,6 +1,6 @@
 <!-- src/components/TodoAdd.vue -->
 <template>
-  <div class="p-4 flex">
+  <div class="flex">
     <!-- サイドバー -->
     <div class="sidebar p-4 border-r mr-4"> <!-- サイドバー -->
       <nav class="space-y-4">
@@ -16,17 +16,17 @@
         <!-- タイトル -->
         <div class="flex flex-col">
           <label for="title" class="block">タイトル</label>
-          <input v-model="title" id="title" class="border p-2" required />
+          <input v-model="title" id="title" class="input-base" required />
         </div>
         <!-- 説明 -->
         <div class="flex flex-col">
           <label for="description" class="block">説明</label>
-          <textarea v-model="description" id="description" class="border p-2 h-24"></textarea>
+          <textarea v-model="description" id="description" class="input-base h-24"></textarea>
         </div>
         <!-- タグ -->
         <div class="flex flex-col">
           <label for="tag" class="block">タグ</label>
-          <select v-model="tag" id="tag" class="border p-2">
+          <select v-model="tag" id="tag" class="input-base text-center">
             <option v-for="tagName in tags" :key="tagName" :value="tagName">
               {{ tagName }}
             </option>
@@ -35,7 +35,7 @@
         <!-- ステータス -->
         <div class="flex flex-col">
           <label for="status" class="block">ステータス</label>
-          <select v-model="status" id="status" class="border p-2">
+          <select v-model="status" id="status" class="input-base text-center">
             <option value="0">未着手</option>
             <option value="1">完了</option>
             <option value="2">進行中</option>

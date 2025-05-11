@@ -1,5 +1,6 @@
+<!-- src/components/TodoEdit.vue -->
 <template>
-  <div class="p-4 flex">
+  <div class="flex">
     <!-- サイドバー -->
     <div class="sidebar p-4 border-r mr-4">
       <nav class="space-y-4">
@@ -14,15 +15,15 @@
       <form @submit.prevent="updateTodo" class="space-y-4 flex flex-col">
         <div class="flex flex-col">
           <label for="title" class="block">タイトル</label>
-          <input v-model="todo.title" id="title" class="border p-2" required />
+          <input v-model="todo.title" id="title" class="input-base" />
         </div>
         <div class="flex flex-col">
           <label for="description" class="block">説明</label>
-          <textarea v-model="todo.description" id="description" class="border p-2 h-24"></textarea>
+          <textarea v-model="todo.description" id="description" class="input-base h-24" />
         </div>
         <div class="flex flex-col">
           <label for="tag" class="block">タグ</label>
-          <select v-model="todo.tag" id="tag" class="border p-2">
+          <select v-model="todo.tag" id="tag" class="input-base text-center">
             <option v-for="tagName in tags" :key="tagName" :value="tagName">
               {{ tagName }}
             </option>
@@ -30,19 +31,15 @@
         </div>
         <div class="flex flex-col">
           <label for="status" class="block">ステータス</label>
-          <select v-model="todo.status" id="status" class="border p-2">
+          <select v-model="todo.status" id="status" class="input-base text-center">
             <option value="0">未着手</option>
             <option value="1">完了</option>
             <option value="2">進行中</option>
           </select>
         </div>
-        <div class="flex flex-col gap-4">  <!-- gapを調整 -->
-          <button type="submit" class="text-white p-2 rounded">
-            更新
-          </button>
-          <button @click.prevent="deleteTodo" class="text-white p-2 rounded">
-            削除
-          </button>
+        <div class="flex flex-col gap-4">
+          <button type="submit" class="btn">更新</button>
+          <button @click.prevent="deleteTodo" class="btn">削除</button>
         </div>
       </form>
     </div>
@@ -114,41 +111,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.flex-1 {
-  flex-grow: 1;
-  min-width: 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  background-color: #fff;
-}
-
-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-nav a {
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #3b82f6;
-  color: #3b82f6;
-  text-decoration: none;
-}
-
-nav a:hover {
-  color: #2563eb;
-  border-color: #2563eb;
-}
-
-div.flex {
-  display: flex;
-}
-
-.flex-col {
-  flex-direction: column;
-}
 
 button {
   border: 2px solid #3b82f6;
@@ -166,19 +128,11 @@ button:hover {
   border-color: #2563eb;
 }
 
-textarea {
-  height: 6rem;
-}
-
-input, textarea, select, button {
-  width: 100%;
-  box-sizing: border-box;
-}
-
 #tag, #status {
   text-align: center;
   font-size: 1.1rem;
   height: 3rem;
   padding: 0.5rem 1rem;
 }
+
 </style>

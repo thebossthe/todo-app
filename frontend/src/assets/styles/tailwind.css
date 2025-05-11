@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 共通ボタン */
+.btn {
+  @apply w-full text-white bg-blue-500 hover:bg-blue-600 border-2 border-blue-500 hover:border-blue-600 p-2 rounded text-center;
+}
+
+/* 共通入力欄 */
+.input-base {
+  @apply border border-gray-800 p-2 w-full box-border;
+}
+
+/* セレクト用（中央寄せ + 高さ調整） */
+.select-lg {
+  @apply text-center text-lg h-12 py-2 px-4;
+}

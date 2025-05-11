@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'; 
 import { DatabaseService } from '../database/database.service';
+import { loadSql } from '../utils/sq1-loader'
 
 @Injectable()
 export class TodoService {
@@ -11,19 +12,11 @@ export class TodoService {
    * @param includeCompleted - 完了したToDoを含むかどうか
    * @returns ToDoリストの配列
    */
-  async findAll(showCompleted: boolean) {
-    const sql = `
-      SELECT 
-        "ＴＯＤＯ＿ＩＤ" AS id,
-        "タイトル" AS title,
-        "説明" AS description,
-        "タグ" AS tag,
-        "ＴＯＤＯ＿ステータス" AS status
-      FROM "T_ToDoリスト"
-      ${showCompleted ? "" : "WHERE \"ＴＯＤＯ＿ステータス\" != 1"}  -- 完了ステータスが1の場合を除外
-      ORDER BY "ＴＯＤＯ＿ＩＤ"
-    `;
-    const result = await this.db.getClient().query(sql);
+  async findAll(
+    showCompleted: boolean // 画面側「完了も含む」のチェックボックス
+  ) {
+    const sql = loadSql('findAll.sql');
+    const result = await this.db.getClient().query(sql, [showCompleted]);
     return result.rows;
   }
 
@@ -38,12 +31,8 @@ export class TodoService {
     tag?: string;
     status?: number;  // 任意のステータス（整数）
   }) {
-    const sql = `
-      INSERT INTO "T_ToDoリスト" ("タイトル", "説明", "タグ", "ＴＯＤＯ＿ステータス")
-      VALUES ($1, $2, $3, $4)
-      RETURNING "ＴＯＤＯ＿ＩＤ" AS id
-    `;
-    const values = [todo.title, todo.description || null, todo.tag || null, todo.status || 0]; // デフォルトは0
+    const sql = loadSql('createTodo.sql');
+    const values = [todo.title, todo.description || null, todo.tag || null, todo.status || 0];
     const result = await this.db.getClient().query(sql, values);
     return { id: result.rows[0].id };
   }
@@ -60,22 +49,8 @@ export class TodoService {
     tag?: string;
     status: number;  // 任意のステータス（整数）
   }) {
-    const sql = `
-      UPDATE "T_ToDoリスト"
-      SET "タイトル" = $1,
-          "説明" = $2,
-          "タグ" = $3,
-          "ＴＯＤＯ＿ステータス" = $4
-      WHERE "ＴＯＤＯ＿ＩＤ" = $5
-      RETURNING "ＴＯＤＯ＿ＩＤ" AS id
-    `;
-    const values = [
-      todo.title,
-      todo.description || null,
-      todo.tag || null,
-      todo.status,  // 任意のステータス（整数）
-      id
-    ];
+    const sql = loadSql('updateTodo.sql');
+    const values = [todo.title, todo.description || null, todo.tag || null, todo.status, id];
     const result = await this.db.getClient().query(sql, values);
     return { id: result.rows[0].id };
   }
@@ -86,7 +61,7 @@ export class TodoService {
    * @returns 成功レスポンス
    */
   async delete(id: number) {
-    const sql = `DELETE FROM "T_ToDoリスト" WHERE "ＴＯＤＯ＿ＩＤ" = $1 RETURNING "ＴＯＤＯ＿ＩＤ" AS id`;
+    const sql = loadSql('deleteTodo.sql');
     const result = await this.db.getClient().query(sql, [id]);
     return { success: true, id: result.rows[0].id };
   }
@@ -96,12 +71,8 @@ export class TodoService {
    * @returns タグの名称の配列
    */
     async getTags() {
-      const sql = `
-        SELECT "タグ名称" AS tag
-        FROM "T_タグ定数"
-        ORDER BY "タグ名称"
-      `;
+      const sql = loadSql('getTags.sql');
       const result = await this.db.getClient().query(sql);
-      return result.rows.map(row => row.tag);  // タグ名称の配列を返す
+      return result.rows.map(row => row.tag);
     }
 }

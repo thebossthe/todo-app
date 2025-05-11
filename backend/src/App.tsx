@@ -15,20 +15,6 @@ function App() {
       .then(data => setTodos(data))
       .catch(err => console.error('データ取得失敗:', err));
   }, []);
-
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h1>✅ Todo 一覧</h1>
-      <ul>
-        {todos.map(todo => (
-          <li key={todo.id}>
-            <span>{todo.title}</span>
-            {todo.completed ? ' ✅' : ' ⬜️'}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 }
 
 export default App;
