@@ -1,12 +1,8 @@
+<!-- src/components/TodoList.vue -->
 <template>
   <div class="flex h-screen">
     <!-- サイドバー -->
-    <div class="sidebar p-4 border-r mr-4">
-      <nav class="space-y-4">
-        <router-link to="/" class="block text-blue-600 hover:text-blue-800 border-b-2 pb-2">一覧</router-link>
-        <router-link to="/add" class="block text-blue-600 hover:text-blue-800 border-b-2 pb-2">追加</router-link>
-      </nav>
-    </div>
+    <Sidebar />
 
     <!-- メインコンテンツ -->
     <div class="main-content w-full flex-grow min-w-0 p-4">
@@ -66,6 +62,7 @@
 </template>
 
 <script setup>
+import Sidebar from './Sidebar.vue'
 import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 

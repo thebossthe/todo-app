@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'; 
 import { DatabaseService } from '../database/database.service';
-import { loadSql } from '../utils/sq1-loader'
+import { loadSql } from '../utils/sql-loader'
 
 @Injectable()
 export class TodoService {

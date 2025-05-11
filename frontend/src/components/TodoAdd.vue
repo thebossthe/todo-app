@@ -2,12 +2,7 @@
 <template>
   <div class="flex">
     <!-- サイドバー -->
-    <div class="sidebar p-4 border-r mr-4"> <!-- サイドバー -->
-      <nav class="space-y-4">
-        <router-link to="/" class="block text-blue-600 hover:text-blue-800 border-b-2 pb-2">一覧</router-link>
-        <router-link to="/add" class="block text-blue-600 hover:text-blue-800 border-b-2 pb-2">追加</router-link>
-      </nav>
-    </div>
+    <Sidebar />
 
     <!-- フォーム -->
     <div class="flex-1 ml-4 p-4 overflow-auto">
@@ -53,6 +48,7 @@
 </template>
 
 <script setup>
+import Sidebar from './Sidebar.vue'
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';

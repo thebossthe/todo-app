@@ -16,3 +16,8 @@
 .select-lg {
   @apply text-center text-lg h-12 py-2 px-4;
 }
+
+/* サイドバーのリンク */
+.sidebar-link{
+  @apply inline-flex items-center justify-center gap-3 text-blue-600 hover:text-blue-800
+}
