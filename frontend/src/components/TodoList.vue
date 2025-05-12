@@ -8,8 +8,31 @@
     <div class="main-content w-full flex-grow min-w-0 p-4">
       <h2 class="text-xl mb-4">一覧</h2>
 
-      <!-- ページングボタン -->
       <div class="mt-4 justify-center items-center space-x-2">
+        <!-- 検索フォーム -->
+        <div class="mb-4 space-x-4">
+          <!-- タイトル検索 -->
+          <input
+            v-model="titleFilter"
+            type="text"
+            placeholder="タイトル検索"
+            class="search-base"
+          />
+          
+          <!-- タグ選択 -->
+          <select v-model="tagFilter" class="search-base">
+            <option value="All">すべてのタグ</option>
+            <option v-for="tag in tags" :key="tag" :value="tag">{{ tag }}</option>
+          </select>
+        </div>
+
+        <!-- 完了も含むチェックボックス -->
+        <label>
+          <input type="checkbox" v-model="showCompleted"/>
+          完了も含む
+        </label>
+
+        <!-- ページングボタン -->
         <button
           @click="goToPage(currentPage - 1)"
           :disabled="currentPage === 1"
@@ -25,12 +48,6 @@
           >
           次へ
         </button>
-
-        <!-- 完了も含むチェックボックス -->
-        <label>
-          <input type="checkbox" v-model="showCompleted"/>
-          完了も含む
-        </label>
       </div>
 
       <table class="w-full border-collapse">
@@ -68,8 +85,12 @@ import axios from 'axios'
 
 const todos = ref([])
 const showCompleted = ref(false) // 完了も含むチェックボックス
-const currentPage = ref(1);
-const itemsPerPage = 10; // 1ページあたりの件数
+const currentPage = ref(1);      // デフォルトのページ
+const itemsPerPage = 10;         // 1ページあたりの件数
+const titleFilter = ref('');     // タイトル検索用
+const tagFilter = ref('All');    // タグ検索用
+const tags = ref([]);            // タグ取得用
+
 
 // ステータスのテキストを返す関数
 const getStatusText = (status) => {
@@ -88,15 +109,28 @@ const getStatusText = (status) => {
 
 // Todo一覧を取得する処理
 const fetchTodos = async () => {
-  console.log('Fetching Todos...', { includeCompleted: showCompleted.value });  // リクエスト時のパラメータを確認
   try {
     const response = await axios.get('http://localhost:3000/todos', {
-      params: { includeCompleted: showCompleted.value }
+      params: {
+        includeCompleted: showCompleted.value,
+        title: titleFilter.value,
+        tag: tagFilter.value
+      }
     });
-    console.log('Fetched Todos:', response.data);  // レスポンス内容を確認
     todos.value = response.data;
   } catch (err) {
     console.error('Todoの取得に失敗しました:', err);
+  }
+};
+
+// タグ一覧取得
+const fetchTags = async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/todos/tags');
+    console.log("取得したタグ一覧:", response.data);
+    tags.value = response.data;
+  } catch (err) {
+    console.error('タグの取得に失敗しました:', err);
   }
 };
 
@@ -112,12 +146,15 @@ const filteredTodos = computed(() => {
 
 // コンポーネントがマウントされた時にTodo一覧を取得
 onMounted(() => {
-  fetchTodos()
+  fetchTodos();
+  fetchTags();
 })
 
-// 完了も含むオプション変更時に再検索
-watch(showCompleted, () => {
+// 「完了も含む」「タイトル」「タグ」オプション変更時に再検索
+watch([showCompleted, titleFilter, tagFilter], () => {
   console.log('showCompleted changed:', showCompleted.value);  // showCompletedの状態確認
+  console.log('titleFilter   changed:', titleFilter.value);    // titleFilterの状態確認
+  console.log('tagFilter     changed:', tagFilter.value);      // tagFilterの状態確認
   fetchTodos()
   currentPage.value = 1;
 });

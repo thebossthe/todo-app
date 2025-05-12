@@ -9,48 +9,52 @@ export class TodoService {
 
   /**
    * 全てのToDoを取得する
-   * @param includeCompleted - 完了したToDoを含むかどうか
-   * @returns ToDoリストの配列
+   * @param showCompleted 「完了も含む」のチェックボックス（true: 含める, false: 含めない）
+   * @param searchTitle   タイトル入力
+   * @param searchTag     タグ選択
+   * @returns             ToDoリストの配列
    */
   async findAll(
-    showCompleted: boolean // 画面側「完了も含む」のチェックボックス
+    showCompleted: boolean,
+    searchTitle: string,
+    searchTag: string
   ) {
     const sql = loadSql('findAll.sql');
-    const result = await this.db.getClient().query(sql, [showCompleted]);
+    const result = await this.db.getClient().query(sql, [showCompleted,searchTitle,searchTag]);
     return result.rows;
   }
 
   /**
    * ToDo を新規作成する
-   * @param todo - 作成するToDoの情報
-   * @returns 作成されたToDoのID
+   * @param todo - 作成するToDoの情報（titleは必須、description/tag/statusは任意）
+   * @returns      作成されたToDoのID
    */
   async create(todo: {
     title: string;
     description?: string;
     tag?: string;
-    status?: number;  // 任意のステータス（整数）
+    status?: number;
   }) {
     const sql = loadSql('createTodo.sql');
-    const values = [todo.title, todo.description || null, todo.tag || null, todo.status || 0];
+    const values = [todo.title, todo.description || null, todo.tag ?? '', todo.status || 0];
     const result = await this.db.getClient().query(sql, values);
     return { id: result.rows[0].id };
   }
 
   /**
    * ToDo を更新する
-   * @param id - 更新対象のToDo ID
-   * @param todo - 更新内容
-   * @returns 成功レスポンス
+   * @param id   -  更新対象のToDo ID
+   * @param todo -  更新するToDoの内容（title/description/tag/status）
+   * @returns       更新後のToDoのID
    */
   async update(id: number, todo: {
     title: string;
     description?: string;
     tag?: string;
-    status: number;  // 任意のステータス（整数）
+    status: number;
   }) {
     const sql = loadSql('updateTodo.sql');
-    const values = [todo.title, todo.description || null, todo.tag || null, todo.status, id];
+    const values = [todo.title, todo.description || null, todo.tag ?? '', todo.status, id];
     const result = await this.db.getClient().query(sql, values);
     return { id: result.rows[0].id };
   }
@@ -58,7 +62,7 @@ export class TodoService {
   /**
    * ToDo を削除する
    * @param id - 削除対象のToDo ID
-   * @returns 成功レスポンス
+   * @returns    削除されたToDoのIDと成功ステータス
    */
   async delete(id: number) {
     const sql = loadSql('deleteTodo.sql');
@@ -66,13 +70,13 @@ export class TodoService {
     return { success: true, id: result.rows[0].id };
   }
 
-    /**
+  /**
    * タグの一覧を取得する
-   * @returns タグの名称の配列
+   * @returns タグ名称の配列
    */
-    async getTags() {
-      const sql = loadSql('getTags.sql');
-      const result = await this.db.getClient().query(sql);
-      return result.rows.map(row => row.tag);
-    }
+  async getTags(): Promise<string[]> {
+    const sql = loadSql('getTags.sql');
+    const result = await this.db.getClient().query(sql);
+    return result.rows.map(row => row.tag);
+  }
 }

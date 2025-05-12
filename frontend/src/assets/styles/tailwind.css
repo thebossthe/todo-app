@@ -7,6 +7,11 @@
   @apply w-full text-white bg-blue-500 hover:bg-blue-600 border-2 border-blue-500 hover:border-blue-600 p-2 rounded text-center;
 }
 
+/* 共通検索欄 */
+.search-base {
+  @apply border border-gray-800 p-2 box-border;
+}
+
 /* 共通入力欄 */
 .input-base {
   @apply border border-gray-800 p-2 w-full box-border;

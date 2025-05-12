@@ -57,7 +57,7 @@ const title = ref('');
 const description = ref('');
 const tag = ref('');
 const status = ref(0);  // デフォルトは未着手
-const tags = ref([]);  // タグの選択肢を保持
+const tags = ref([1]);  // タグの選択肢を保持
 
 const router = useRouter();
 

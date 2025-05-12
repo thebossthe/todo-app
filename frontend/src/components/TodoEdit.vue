@@ -49,7 +49,7 @@ import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
-const todo = ref({ title: '', description: '', tag: '', status: 0 })
+const todo = ref({ title: '', description: '', tag: 1, status: 0 })
 const tags = ref([])
 
 const fetchTodo = async () => {
