@@ -11,7 +11,7 @@ export class DatabaseService implements OnModuleInit {
       user: 'postgres',
       host: 'localhost',
       database: 'todo_app',
-      password: 'lmj95368',
+      password: 'password',
       port: 5432,
     });
   }
